@@ -9,13 +9,37 @@
 <h1>Architectural Concept Starter</h1>
 <p>Generate a clear architectural concept direction in minutes.</p>
 
-<form>
-  <input type="text" placeholder="Project Type"><br><br>
-  <textarea placeholder="Site Description"></textarea><br><br>
+<form id="conceptForm">
+  <input type="text" id="projectType" placeholder="Project Type" required><br><br>
+  <textarea id="siteDescription" placeholder="Site Description" required></textarea><br><br>
   <button type="submit">Generate Concept</button>
 </form>
 
-<p><em>MVP version – testing concept clarity only</em></p>
+<h3>Result:</h3>
+<pre id="result">Waiting for input...</pre>
+
+<script>
+document.getElementById("conceptForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const projectType = document.getElementById("projectType").value;
+  const siteDescription = document.getElementById("siteDescription").value;
+
+  const response = await fetch("/api/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      projectType,
+      siteDescription
+    })
+  });
+
+  const text = await response.text();
+  document.getElementById("result").innerText = text;
+});
+</script>
 
 </body>
 </html>
