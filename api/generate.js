@@ -1,6 +1,7 @@
 export const config = {
   runtime: "nodejs"
 };
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).send("Method Not Allowed");
@@ -42,7 +43,7 @@ Focus on spatial logic and concept clarity.
         "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4.1-mini",
         messages: [{ role: "user", content: prompt }],
         temperature: 0.7
       })
@@ -50,13 +51,20 @@ Focus on spatial logic and concept clarity.
 
     const data = await response.json();
 
+    // 👇 اطبع الخطأ الحقيقي لو OpenAI رجع Error
+    if (data.error) {
+      return res.status(500).send(
+        "OpenAI Error: " + data.error.message
+      );
+    }
+
     if (!data.choices || !data.choices[0]) {
-      return res.status(500).send("AI response error");
+      return res.status(500).send("Invalid AI response structure");
     }
 
     res.status(200).send(data.choices[0].message.content);
 
-  } catch (error) {
-    res.status(500).send("Server error");
+  } catch (err) {
+    res.status(500).send("Server exception: " + err.message);
   }
 }
